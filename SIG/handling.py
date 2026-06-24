@@ -21,7 +21,6 @@ class Lokasi(ABC):
     def get_info_popup(self) -> str:
         pass
 
-# --- Kelas Lama ---
 class TempatWisata(Lokasi):
     def __init__(self, nama: str, lat: float, lon: float, jenis: str, desk: str):
         super().__init__(nama, lat, lon)
@@ -43,7 +42,6 @@ class TempatIbadah(Lokasi):
     def get_info_popup(self) -> str:
         return f"<h4><b>{self.nama}</b></h4><i>Tempat Ibadah ({self.agama})</i><br><br>{self.deskripsi}"
 
-# --- PENAMBAHAN KELAS BARU (Tugas A) ---
 class Kantor(Lokasi):
     def __init__(self, nama: str, lat: float, lon: float, desk: str):
         super().__init__(nama, lat, lon)
@@ -65,10 +63,6 @@ class Taman(Lokasi):
     def get_info_popup(self) -> str:
         return f"<h4><b>{self.nama}</b></h4><i>Taman Kota</i><br><br>{self.deskripsi}"
 
-
-# ==========================================
-# 2. FUNGSI PEMROSESAN DATA
-# ==========================================
 def baca_data_lokasi(nama_file: str) -> pd.DataFrame:
     print(f"Mencoba membaca file CSV: {nama_file}")
     try:
@@ -101,7 +95,6 @@ def objek_lokasi(dataframe: pd.DataFrame) -> list:
                 objek = Kuliner(nama, lat, lon, desk)
             elif 'Ibadah' in tipe:
                 objek = TempatIbadah(nama, lat, lon, "Umum", desk)
-            # --- MODIFIKASI: Deteksi Objek Baru (Tugas A) ---
             elif 'Kantor' in tipe:
                 objek = Kantor(nama, lat, lon, desk)
             elif 'Museum' in tipe:
@@ -125,14 +118,10 @@ def tulis_log(pesan: str, file_log: str = "proses_peta.log"):
     except IOError: pass
 
 
-# ==========================================
-# 3. FUNGSI PEMBUATAN PETA (TUGAS B & C)
-# ==========================================
 def buat_peta(list_objek: list, file_output: str = "peta_lokasi.html"):
     if not list_objek: return
 
-    # --- TUGAS C: BACA CONFIG_PETA.TXT ---
-    lat_tengah, lon_tengah, zoom_awal = -6.9929, 110.4200, 13 # Nilai Default
+    lat_tengah, lon_tengah, zoom_awal = -6.9929, 110.4200, 13 
     try:
         with open("config_peta.txt", "r") as f:
             baris = f.readlines()
@@ -145,7 +134,6 @@ def buat_peta(list_objek: list, file_output: str = "peta_lokasi.html"):
     except (ValueError, IndexError):
         print(" -> Peringatan: Format config_peta.txt salah. Menggunakan default Semarang.")
 
-    # Inisialisasi Peta berdasarkan parameter dari file txt
     peta = folium.Map(location=[lat_tengah, lon_tengah], zoom_start=zoom_awal)
 
     jumlah_marker = 0
@@ -155,7 +143,6 @@ def buat_peta(list_objek: list, file_output: str = "peta_lokasi.html"):
         if koordinat != (0.0, 0.0):
             info_popup_html = lok.get_info_popup()
 
-            # --- TUGAS B: KUSTOMISASI MARKER DENGAN isinstance() ---
             warna = 'blue'
             ikon = 'info-sign'
 
@@ -172,7 +159,6 @@ def buat_peta(list_objek: list, file_output: str = "peta_lokasi.html"):
             elif isinstance(lok, Taman):
                 warna, ikon = 'lightgreen', 'leaf'
 
-            # Menambahkan Marker ke Peta
             folium.Marker(
                 location=koordinat, 
                 popup=folium.Popup(info_popup_html, max_width=300),
@@ -187,21 +173,16 @@ def buat_peta(list_objek: list, file_output: str = "peta_lokasi.html"):
     except Exception as e:
         print(f" -> ERROR menyimpan peta: {e}")
 
-# ==========================================
-# 4. KODE UTAMA (TUGAS D)
-# ==========================================
 if __name__ == "__main__":
     nama_file = "lokasi_semarang.csv"
     nama_peta = "peta_interaktif_semarang.html"  
 
     print("--- Memulai Pemrosesan Peta ---")
 
-    # Membaca data CSV, membuat objek OOP, dan membuat peta Folium
     df_lokasi = baca_data_lokasi(nama_file)
     list_semua = objek_lokasi(df_lokasi) 
     buat_peta(list_semua, nama_peta)
 
     print(f"\nProses Selesai. Membuka {nama_peta} di browser...")
     
-    # Otomatis membuka file HTML di browser Anda!
     webbrowser.open(nama_peta)

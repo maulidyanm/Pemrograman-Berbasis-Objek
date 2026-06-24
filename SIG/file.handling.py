@@ -131,17 +131,15 @@ def buat_peta(list_objek: list, file_output: str = "peta_lokasi.html"):
         tulis_log(pesan_log)
         return
     
-    # PERBAIKAN 3: Perbaiki indentasi agar kode ini dieksekusi
     print(f"\n[{nama_fungsi}] memulai pembuatan peta dari {len(list_objek)} lokasi...")
     tulis_log(f"[{nama_fungsi}] memulai pembuatan peta '{file_output}' dengan {len(list_objek)} lokasi")
 
     try:
         lat_tengah = list_objek[0].latitude
-        lon_tengah = list_objek[0].longitude # PERBAIKAN 4: Typo 'longtitude'
+        lon_tengah = list_objek[0].longitude 
     except IndexError:
         lat_tengah, lon_tengah = -6.9929, 110.4200
         
-    # PERBAIKAN 3: Keluarkan dari blok 'except' agar peta tetap dibuat meskipun tidak terjadi error!
     peta = folium.Map(location=[lat_tengah, lon_tengah], zoom_start=12)
 
     jumlah_marker = 0
@@ -151,7 +149,6 @@ def buat_peta(list_objek: list, file_output: str = "peta_lokasi.html"):
         koordinat = lok.get_koordinat()
         if koordinat != (0.0, 0.0):
             info_popup_html = lok.get_info_popup()
-            # PERBAIKAN 5: Tooltip dimasukkan ke marker, bukan popup
             folium.Marker(
                 location=koordinat, 
                 popup=folium.Popup(info_popup_html, max_width=300),
